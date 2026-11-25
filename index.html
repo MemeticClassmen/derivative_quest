@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Derivative Quest: Forest of Four Realms</title>
+<style>
+:root{
+  --ink:#f7f0d9;
+  --muted:#c8c2a7;
+  --panel:#1c2922;
+  --edge:#88734d;
+  --gold:#f0ca75;
+  --green:#8fc58b;
+  --red:#e58b7b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#101812;
+  color:var(--ink);
+  font-family:ui-monospace,Consolas,monospace;
+  padding:14px;
+  background-image:radial-gradient(ellipse at top,#304b36 0,transparent 55%),linear-gradient(#101812,#1b1b16);
+}
+.wrap{max-width:1120px;margin:auto}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:0 0 12px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  font-size:28px;
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  background:#654a2e;
+  border:3px solid #d3ad63;
+  box-shadow:inset 0 0 0 3px #3d3023;
+  border-radius:6px;
+}
+h1{font-size:clamp(19px,3vw,27px);margin:0;color:#f5d58c}
+.sub{font-size:11px;color:var(--muted);margin-top:4px}
+.tag{
+  font-size:11px;
+  border:1px solid var(--edge);
+  background:#1b2a20;
+  padding:8px 10px;
+  color:#e6d6a9;
+  border-radius:6px;
+}
+.panel{
+  background:linear-gradient(145deg,#24382b,#1b2924);
+  border:3px solid #766342;
+  box-shadow:0 12px 0 #0a100c,0 18px 40px #0008;
+  padding:18px;
+  border-radius:8px;
+}
+.intro{text-align:center;padding:30px 20px}
+.hero{font-size:64px;filter:drop-shadow(4px 5px #111)}
+h2{color:#f5d58c}
+.intro p{max-width:700px;margin:10px auto 20px;line-height:1.6;color:#d8d2b9}
+.stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px}
+.stat{
+  padding:8px 12px;
+  background:#17231c;
+  border:1px solid #65764e;
+  font-size:12px;
+  color:#ddd2ae;
+  border-radius:6px;
+}
+.stat b{color:#f4d486}
+.btn{
+  font:inherit;
+  font-weight:bold;
+  cursor:pointer;
+  color:#201d13;
+  background:linear-gradient(#f3d58e,#b98a4b);
+  border:2px solid #ffe5a8;
+  padding:11px 15px;
+  box-shadow:0 4px 0 #65472c;
+  border-radius:6px;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #65472c}
+.btn.dark{
+  color:#f5e8c3;
+  background:#354338;
+  border-color:#83906a;
+  box-shadow:0 4px 0 #172119;
+}
+.hidden{display:none!important}
+.hud{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.hud span{
+  background:#17231c;
+  border:1px solid #65764e;
+  padding:7px 10px;
+  font-size:12px;
+  border-radius:6px;
+}
+.hud b{color:#f2d17e}
+.ability-meters{
+  display:flex!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+.meter-box{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:11px;
+  color:#e8dfc0;
+}
+.meter-track{
+  width:52px;
+  height:8px;
+  background:#0e1711;
+  border:1px solid #7d8f63;
+  border-radius:4px;
+  overflow:hidden;
+  display:inline-block;
+}
+.meter-fill{
+  height:100%;
+  width:0%;
+  transition:width 0.08s linear;
+}
+.meter-fill.dart{background:linear-gradient(90deg,#3bc9db,#99e9f2)}
+.meter-fill.bomb{background:linear-gradient(90deg,#f08c00,#ffd43b)}
+.utility-buttons{
+  display:flex!important;
+  gap:6px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+}
+.utility{font-size:11px;padding:6px 9px;box-shadow:none}
+.help-dialog p{font-size:13px;line-height:1.6;color:#e6dec5}
+.help-dialog b{color:#f4d486}
+.stage{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin:8px 0;
+  color:#e8d5a2;
+  font-size:12px;
+}
+.canvas-wrap{
+  position:relative;
+  border:4px solid #786344;
+  background:#111;
+  box-shadow:inset 0 0 0 2px #18251b;
+  overflow:hidden;
+  border-radius:6px;
+}
+.canvas-wrap canvas{
+  display:block;
+  width:100%;
+  height:auto;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+}
+.help{
+  font-size:11px;
+  color:#c9c2a8;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:9px 0;
+}
+.mobile{
+  display:none;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+}
+.pad{
+  display:grid;
+  grid-template-columns:repeat(3,42px);
+  grid-template-rows:repeat(2,38px);
+  gap:3px;
+}
+.pad button,.mobile button{
+  font:inherit;
+  color:#f6e9c8;
+  background:#344b39;
+  border:1px solid #84956c;
+  padding:8px;
+  border-radius:6px;
+}
+.pad .up{grid-column:2}
+.pad .left{grid-column:1;grid-row:2}
+.pad .down{grid-column:2;grid-row:2}
+.pad .right{grid-column:3;grid-row:2}
+.mobile .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.modal{
+  position:fixed;
+  inset:0;
+  background:#070d0bdc;
+  display:grid;
+  place-items:center;
+  padding:14px;
+  z-index:5;
+}
+.dialog{
+  width:min(680px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:linear-gradient(145deg,#2b3e30,#18251f);
+  border:4px solid #c09b5c;
+  box-shadow:0 0 0 5px #1118,0 20px 70px #000;
+  padding:20px;
+  border-radius:8px;
+}
+.dialog h2{margin:0 0 8px}
+.meta{font-size:11px;color:#d8c99f;margin-bottom:12px}
+.question{font:bold 20px/1.5 Georgia,serif;color:#fff4d8;margin:14px 0}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.option{
+  font:16px/1.35 Georgia,serif;
+  text-align:left;
+  padding:13px;
+  background:#34483a;
+  color:#f7f0d9;
+  border:2px solid #708260;
+  cursor:pointer;
+  border-radius:6px;
+}
+.option:hover{background:#496447}
+.option:disabled{opacity:1}
+.option.correct{border-color:#9ee2a1;background:#244c34}
+.option.wrong{border-color:#e88c82;background:#542c2c}
+.tip{
+  margin-top:12px;
+  padding:10px;
+  background:#18241c;
+  border:1px solid #b49b62;
+  color:#e8d9b4;
+  font-size:12px;
+  line-height:1.55;
+  border-radius:6px;
+}
+.dialog-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.feedback{margin-top:12px;line-height:1.5;font-size:13px}
+.boss-note{font-size:12px;color:#f1dca8}
+.results{text-align:center}
+.results .score{font-size:44px;color:#f4d486}
+.result-list{text-align:left;max-height:260px;overflow:auto}
+.result-card{
+  background:#17231c;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #61724e;
+  font-size:12px;
+  line-height:1.5;
+  border-radius:6px;
+}
+.reward-card{
+  background:#17231c;
+  padding:14px;
+  border:2px solid #d3ad63;
+  border-radius:6px;
+  line-height:1.6;
+}
+.reward-card h3{margin:0 0 8px;color:#f5d58c}
+@media(max-width:700px){
+  .hud{align-items:center}
+  .utility-buttons{width:100%;justify-content:flex-end}
+  .utility{font-size:10px;padding:5px 7px}
+  body{padding:8px}
+  .panel{padding:10px}
+  .tag{display:none}
+  .options{grid-template-columns:1fr}
+  .mobile{display:flex}
+  .help{font-size:10px}
+  .question{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">⚔</div>
+      <div>
+        <h1>DERIVATIVE QUEST</h1>
+        <div class="sub">FOREST OF FOUR REALMS · A PIXEL ADVENTURE</div>
+      </div>
+    </div>
+    <div class="tag">20 TRIALS · 4 REALMS · 4 BOSSES</div>
+  </header>
+
+  <section id="start" class="panel intro">
+    <div class="hero">🌲⚔️</div>
+    <h2>The Great Forest Has Forgotten Its Rules</h2>
+    <p>Explore one vast, continuous ancient forest divided into four regions. Find the twenty lost math scrolls and fight your way through the guardians. Every fifth trial awakens a realm boss with unique combat patterns!</p>
+    <div class="stats">
+      <div class="stat"><b>20</b> calculus questions</div>
+      <div class="stat"><b>1</b> vast forest world</div>
+      <div class="stat"><b>4</b> boss battles</div>
+      <div class="stat"><b>34</b> possible points</div>
+      <div class="stat"><b>WASD</b> / arrows to move</div>
+      <div class="stat"><b>SPACE</b> sword · <b>E</b> interact</div>
+    </div>
+    <p class="boss-note">Wrong answers summon a mistake encounter. Defeat it, read the nearby sign for a useful tip, then answer correctly to unlock the path.</p>
+    <button class="btn" id="startBtn" type="button">ENTER THE FOREST</button>
+  </section>
+
+  <section id="game" class="panel hidden">
+    <div class="hud">
+      <span>❤ <b id="hp">5 / 5</b></span>
+      <span>★ <b id="score">0 / 34</b></span>
+      <span>SCROLL <b id="progress">0 / 20</b></span>
+      <span>REGION <b id="realm">GREENWOOD THICKET</b></span>
+      <span>ARSENAL <b id="weaponHud">🗡 SWORD</b></span>
+      <span id="abilityMeters" class="ability-meters hidden">
+        <span id="dartMeterWrap" class="meter-box hidden">
+          <span>🎯</span>
+          <span class="meter-track"><span id="dartMeterFill" class="meter-fill dart"></span></span>
+          <b id="dartCdText">4.0s</b>
+        </span>
+        <span id="bombMeterWrap" class="meter-box hidden">
+          <span>💣</span>
+          <span class="meter-track"><span id="bombMeterFill" class="meter-fill bomb"></span></span>
+          <b id="bombCdText">10.0s</b>
+        </span>
+      </span>
+      <span class="utility-buttons">
+        <button class="btn dark utility" id="helpBtn" type="button">? HELP</button>
+        <button class="btn dark utility" id="mapBtn" type="button">🗺 MAP (M)</button>
+        <button class="btn dark utility" id="musicBtn" type="button">♫ MUSIC: ON</button>
+      </span>
+    </div>
+    <div class="stage">
+      <span id="objective">Find the glowing scroll.</span>
+      <span id="mode">EXPLORATION</span>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="screen" width="960" height="600" aria-label="Pixel art adventure game"></canvas>
+    </div>
+    <div class="help">
+      <span id="controlsGuide">Move: WASD / arrows · Sword: SPACE · Interact: E</span>
+      <span id="hint">Find the gold scroll marker.</span>
+    </div>
+    <div class="mobile">
+      <div class="pad">
+        <button class="up" data-key="ArrowUp" type="button">▲</button>
+        <button class="left" data-key="ArrowLeft" type="button">◀</button>
+        <button class="down" data-key="ArrowDown" type="button">▼</button>
+        <button class="right" data-key="ArrowRight" type="button">▶</button>
+      </div>
+      <div class="acts">
+        <button data-key="Space" type="button">⚔ ATTACK</button>
+        <button id="btnDart" class="hidden" data-key="KeyQ" type="button">🎯 DART (Q)</button>
+        <button id="btnBomb" class="hidden" data-key="KeyR" type="button">💣 BOMB (R)</button>
+        <button data-key="KeyE" type="button">E INTERACT</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="panel results hidden">
+    <div class="hero">🏆</div>
+    <h2>THE GREAT FOREST IS RESTORED</h2>
+    <div class="score" id="finalScore">0 / 34</div>
+    <p id="summary"></p>
+    <div class="result-list" id="review"></div>
+    <button class="btn" id="again" type="button">PLAY AGAIN</button>
+  </section>
+</div>
+
+<div id="helpModal" class="modal hidden">
+  <div class="dialog help-dialog">
+    <h2>FIELD GUIDE — HOW TO PLAY</h2>
+    <p><b>Explore:</b> Travel across one continuous forest world housing 20 distinct math scroll clearings. Ahead of your current clearing, gates remain locked until you advance.</p>
+    <p><b>World Map:</b> Press <b>M</b> or click <b>MAP</b> to view the full forest map, showing your exact position, cleared scrolls, and your active target scroll.</p>
+    <p><b>Movement:</b> W / ↑ move north, S / ↓ move south, A / ← move west, D / → move east.</p>
+    <p><b>Scrolls:</b> Press <b>E</b> when near a scroll to take on the calculus question.</p>
+    <p><b>Combat:</b> Face an enemy and press <b>SPACE</b> to attack. Dodge incoming wind-up attacks. You are healed after every fight.</p>
+    <p><b>Boss Upgrades:</b> Defeating each realm boss grants <b>+5 Max HP</b> and unlocks new abilities (Golden Greatsword, Homing Magic Darts on <b>Q</b>, and Magic Arcane Bombs on <b>R</b>).</p>
+    <div class="dialog-actions">
+      <button id="closeHelpBtn" class="btn" type="button">BACK TO GAME</button>
+    </div>
+  </div>
+</div>
+
+<div id="quizModal" class="modal hidden">
+  <div class="dialog">
+    <h2 id="qTitle">Lost Scroll</h2>
+    <div class="meta" id="qMeta"></div>
+    <div class="question" id="qPrompt"></div>
+    <div class="options" id="qOptions"></div>
+    <div id="qFeedback" class="feedback"></div>
+    <div id="qTip" class="tip hidden"></div>
+    <div class="dialog-actions">
+      <button id="continueBtn" class="btn hidden" type="button">CONTINUE</button>
+    </div>
+  </div>
+</div>
+
+<div id="rewardModal" class="modal hidden">
+  <div class="dialog">
+    <h2>BOSS DEFEATED — NEW UPGRADES UNLOCKED!</h2>
+    <div id="rewardContent"></div>
+    <div class="dialog-actions">
+      <button id="claimRewardBtn" class="btn" type="button">CONTINUE JOURNEY</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {level:"Level 1", topic:"Power Rule", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">x⁵</span>.', options:["x⁴","5x⁴","4x⁵","5x⁵"], answer:1, tip:"For a power xⁿ, bring the exponent down as a coefficient, then subtract 1 from the exponent: d/dx(xⁿ) = nxⁿ⁻¹. Here, 5 becomes the coefficient and the new exponent is 4."},
+  {level:"Level 2", topic:"Constant Rule", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">7</span>.', options:["7","7x","1","0"], answer:3, tip:"A constant does not change as x changes, so its derivative is zero. Any fixed number—positive, negative, or zero—has derivative 0."},
+  {level:"Level 3", topic:"Constant Multiple", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">3x⁴</span>.', options:["12x³","12x⁴","3x³","7x³"], answer:0, tip:"Keep the constant multiplier and apply the power rule to the x-term: 3 · 4x³ = 12x³."},
+  {level:"Level 4", topic:"Sum/Difference Rule", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">x³ − 4x² + 5x − 9</span>.', options:["3x² − 4x + 5","3x² − 8x + 5 − 9","3x² − 8x + 5","x² − 8x + 5"], answer:2, tip:"Differentiate each term separately. The terms become 3x², −8x, 5, and 0. In particular, the constant −9 disappears."},
+  {level:"Level 5", topic:"Fractional Exponents", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">√x</span>.', options:["1/(2√x)","2√x","1/√x","√x/2"], answer:0, tip:"Rewrite the square root as x^(1/2). Apply the power rule: (1/2)x^(−1/2), which is the same as 1/(2√x)."},
+  {level:"Level 6", topic:"Negative Exponents", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">1/x²</span>.', options:["2/x³","−1/x³","−2/x","−2/x³"], answer:3, tip:"Rewrite 1/x² as x⁻². The power rule gives −2x⁻³, or −2/x³. Keep the negative sign and reduce the exponent by one."},
+  {level:"Level 7", topic:"Product Rule", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">x²(3x + 1)</span>.', options:["6x","9x² + 2x","9x² + 1","3x² + 2x"], answer:1, tip:"Use the product rule: (uv)' = u'v + uv'. Let u=x² and v=3x+1. Then 2x(3x+1) + x²(3) = 9x²+2x."},
+  {level:"Level 8", topic:"Quotient Rule", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">x/(x + 1)</span>.', options:["1/(x + 1)²","1/(x + 1)","(2x + 1)/(x + 1)²","x/(x + 1)²"], answer:0, tip:"Use (u'v − uv')/v². With u=x and v=x+1, the numerator is (1)(x+1) − x(1) = 1. The denominator is (x+1)²."},
+  {level:"Level 9", topic:"Chain Rule", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">(2x + 3)⁴</span>.', options:["4(2x + 3)³","8(2x + 3)⁴","8(2x + 3)³","4(2)³"], answer:2, tip:"Differentiate the outside power first, then multiply by the derivative of the inside. This gives 4(2x+3)³ · 2 = 8(2x+3)³."},
+  {level:"Level 10", topic:"Chain Rule", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">(x² + 1)⁵</span>.', options:["5(x² + 1)⁴","10x(x² + 1)⁴","5x(x² + 1)⁴","10(x² + 1)⁴"], answer:1, tip:"The outside derivative is 5(x²+1)⁴. Multiply by the inside derivative, 2x: 5(x²+1)⁴ · 2x = 10x(x²+1)⁴."},
+  {level:"Level 11", topic:"Chain with Roots", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">√(3x + 1)</span>.', options:["1/(2√(3x + 1))","3/√(3x + 1)","3/(2√(3x + 1))","3√(3x + 1)/2"], answer:2, tip:"Rewrite the expression as (3x+1)^(1/2). The chain rule gives (1/2)(3x+1)^(−1/2) · 3 = 3/[2√(3x+1)]."},
+  {level:"Level 12", topic:"Trig Basics", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">sin x</span>.', options:["−cos x","cos x","−sin x","sec² x"], answer:1, tip:"Memorize the basic derivative pair: d/dx(sin x)=cos x, while d/dx(cos x)=−sin x."},
+  {level:"Level 13", topic:"Trig Basics", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">cos x</span>.', options:["sin x","cos x","−sin x","−cos x"], answer:2, tip:"The derivative of cosine is negative sine: d/dx(cos x)=−sin x. The negative sign is essential."},
+  {level:"Level 14", topic:"Trig Basics", difficulty:"Easy", points:1, prompt:'Find <span class="math">d/dx</span> of <span class="math">tan x</span>.', options:["sec x tan x","cot x","−csc² x","sec² x"], answer:3, tip:"The standard derivative is d/dx(tan x)=sec²x. Do not confuse it with the derivative of cotangent, which is −csc²x."},
+  {level:"Level 15", topic:"Trig + Sum Rule", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">3 sin x − 2 cos x</span>.', options:["3 cos x − 2 sin x","3 cos x + 2 sin x","−3 cos x + 2 sin x","3 cos x + 2 cos x"], answer:1, tip:"Differentiate term by term. The derivative of 3 sin x is 3 cos x. The derivative of −2 cos x is +2 sin x because cosine differentiates to negative sine."},
+  {level:"Level 16", topic:"Trig + Chain", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">sin(5x)</span>.', options:["cos(5x)","5 cos x","5 cos(5x)","−5 cos(5x)"], answer:2, tip:"The derivative of sin(u) is cos(u)·u'. Here u=5x, so u'=5. Keep the 5 and keep the original inside angle: 5cos(5x)."},
+  {level:"Level 17", topic:"Trig + Chain", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">cos(x²)</span>.', options:["−sin(x²)","−2x sin(x²)","2x sin(x²)","−2x sin x"], answer:1, tip:"Differentiate cosine to negative sine, then multiply by the inside derivative. Since d/dx(x²)=2x, the result is −2x sin(x²)."},
+  {level:"Level 18", topic:"Power of a Trig Function", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">sin³x</span>.', options:["3 sin²x","3 cos²x","3 sin²x cos x","cos³x"], answer:2, tip:"Treat sin³x as [sin x]³. The outer power gives 3sin²x, then the chain rule multiplies by the derivative of sin x, which is cos x."},
+  {level:"Level 19", topic:"Product + Trig", difficulty:"Medium", points:2, prompt:'Find <span class="math">d/dx</span> of <span class="math">x sin x</span>.', options:["cos x","sin x + x cos x","x cos x","sin x − x cos x"], answer:1, tip:"Use the product rule with u=x and v=sin x. Then u'v + uv' = 1·sin x + x·cos x."},
+  {level:"BOSS LEVEL", topic:"Product + Chain + Trig", difficulty:"Hard", points:3, prompt:'Find <span class="math">d/dx</span> of <span class="math">x² cos(2x)</span>.', options:["2x cos(2x) + x² sin(2x)","2x cos(2x) − x² sin(2x)","2x cos(2x) − 2x² sin(2x)","−4x sin(2x)"], answer:2, tip:"Combine the product rule and chain rule. Differentiate x² to get 2x, then differentiate cos(2x) to get −2sin(2x). So the two terms are 2xcos(2x) and −2x²sin(2x)."}
+];
+
+const $ = id => document.getElementById(id);
+const canvas = $('screen');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const W = 1920, H = 1280, VIEW = {w: 960, h: 600};
+
+const realms = [
+  {name:'GREENWOOD THICKET', mob:'Moss Slime', boss:'SLIME KING', emoji:'🟢'},
+  {name:'WHISPERING GROVE', mob:'Grave Walker', boss:'ZOMBIE QUEEN', emoji:'🧟'},
+  {name:'SHADOW MIST WOODS', mob:'Bog Tentacle', boss:'PLANT HYDRA', emoji:'🌿'},
+  {name:'ELDERWOOD PEAK', mob:'Lava Golem', boss:'EMBER DRAGON', emoji:'🔥'}
+];
+
+const scrolls = [
+  [150,150],[330,255],[520,145],[700,300],[830,455],
+  [1100,145],[1290,260],[1480,150],[1660,300],[1790,455],
+  [150,790],[330,930],[520,790],[700,960],[830,1120],
+  [1100,790],[1290,930],[1480,790],[1660,960],[1790,1120]
+];
+
+let state = 'start';
+let qIndex = 0, score = 0, answers = [], wrong = [];
+let hp = 5, maxHp = 5, invuln = 0;
+let player = {x: 95, y: 100, faceX: 1, faceY: 0};
+let keys = {}, last = 0;
+
+const worldCanvas = document.createElement('canvas');
+const worldCtx = worldCanvas.getContext('2d');
+worldCanvas.width = W;
+worldCanvas.height = H;
+worldCtx.imageSmoothingEnabled = false;
+
+let enemies = [], projectiles = [], arenaTime = 0, attackCd = 0, arenaType = 'normal', boss = null, tipText = '', shake = 0;
+let mapOpen = false, cameraX = 0, cameraY = 0, walkAnimation = 0, moving = false;
+let firePatches = [], poisonPools = [], bombs = [], darts = [];
+let hasGreatsword = false, hasDarts = false, hasBombs = false;
+let dartsAmmo = 5, maxDarts = 5, dartsRechargeTimer = 0;
+let bombsAmmo = 3, maxBombs = 3, bombsRechargeTimer = 0;
+let poisonTimer = 0, poisonTicks = 0, poisonDmg = 1;
+let lavaSpawnTimer = 0;
+
+function zoneFor(i){ return Math.floor(i / 5); }
+function setText(id, s){ $(id).textContent = s; }
+
+function randFactory(seed){
+  let x = seed >>> 0;
+  return () => {
+    x = (x * 1664525 + 1013904223) >>> 0;
+    return x / 4294967296;
+  };
+}
+
+function drawTree(c, x, y, variant){
+  let trunk = '#523b26', leaf = '#244d2d', highlight = '#36693f';
+  if(variant === 1){ trunk = '#423126'; leaf = '#1c3d26'; highlight = '#295234'; }
+  else if(variant === 2){ trunk = '#5e4732'; leaf = '#2e5934'; highlight = '#437a4c'; }
+  else if(variant === 3){ trunk = '#6e553a'; leaf = '#3a6140'; highlight = '#528059'; }
+
+  c.fillStyle = '#10181266'; c.fillRect(x - 14, y + 16, 30, 8);
+  c.fillStyle = trunk; c.fillRect(x - 5, y - 4, 10, 28);
+  c.fillStyle = leaf; c.fillRect(x - 18, y - 28, 36, 28); c.fillRect(x - 12, y - 40, 24, 18);
+  c.fillStyle = highlight; c.fillRect(x - 12, y - 24, 12, 6); c.fillRect(x - 7, y - 36, 8, 5);
+}
+
+function drawWorld(){
+  const c = worldCtx;
+  c.clearRect(0, 0, W, H);
+  const r = randFactory(999);
+
+  c.fillStyle = '#2a4b33';
+  c.fillRect(0, 0, W, H);
+
+  for(let n = 0; n < 10000; n++){
+    const x = r() * W, y = r() * H;
+    c.fillStyle = n % 4 === 0 ? '#24422c' : n % 4 === 1 ? '#31573c' : n % 4 === 2 ? '#203b27' : '#365f42';
+    c.fillRect(x | 0, y | 0, 2 + (n % 3), 2 + (n % 2));
+  }
+
+  c.strokeStyle = '#8c774d';
+  c.lineWidth = 54;
+  c.lineCap = 'round';
+  c.lineJoin = 'round';
+  c.beginPath();
+  const fullPath = [
+    [70,80],[180,190],[340,240],[510,160],[700,300],[850,470],
+    [960,380],[1120,170],[1300,250],[1480,160],[1660,300],[1830,470],
+    [1790,700],[1660,960],[1480,790],[1290,930],[1100,790],
+    [960,860],[830,1120],[700,960],[520,790],[330,930],[150,790]
+  ];
+  fullPath.forEach((p, i) => i ? c.lineTo(...p) : c.moveTo(...p));
+  c.stroke();
+  c.strokeStyle = '#bba06b33';
+  c.lineWidth = 6;
+  c.stroke();
+
+  scrolls.forEach(s => {
+    c.fillStyle = '#8c774d';
+    c.beginPath(); c.arc(s[0], s[1], 58, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#365f4244';
+    c.beginPath(); c.arc(s[0], s[1], 68, 0, Math.PI * 2); c.fill();
+  });
+
+  for(let n = 0; n < 320; n++){
+    const x = 40 + r() * (W - 80), y = 40 + r() * (H - 80);
+    let nearPath = false;
+    for(const p of fullPath){
+      if(Math.hypot(x - p[0], y - p[1]) < 55){ nearPath = true; break; }
+    }
+    if(nearPath) continue;
+    drawTree(c, x, y, n % 4);
+  }
+
+  for(let n = 0; n < 220; n++){
+    const x = r() * W, y = r() * H;
+    c.fillStyle = '#10181244'; c.fillRect(x, y + 4, 10, 4);
+    if(n % 2 === 0){
+      c.fillStyle = '#6b6e63'; c.fillRect(x, y, 8, 5);
+    }else{
+      c.fillStyle = n % 6 === 0 ? '#e3d17d' : n % 6 === 2 ? '#d98080' : '#91b5e3';
+      c.fillRect(x, y, 3, 3);
+    }
+  }
+
+  for(let z = 0; z < 4; z++){
+    const ox = (z % 2) * 960, oy = Math.floor(z / 2) * 640;
+    c.fillStyle = '#10140f99'; c.fillRect(ox + 22, oy + 18, 250, 34);
+    c.fillStyle = '#f4dda7'; c.font = 'bold 15px monospace'; c.fillText(realms[z].name, ox + 34, oy + 40);
+  }
+}
+
+function drawScroll(c, x, y, active, done){
+  c.fillStyle = '#1119'; c.fillRect(x - 10, y + 14, 22, 6);
+  c.fillStyle = done ? '#6ebf77' : active ? '#f4d26c' : '#77765f';
+  c.fillRect(x - 6, y - 10, 13, 23);
+  c.fillStyle = '#fff0b0'; c.fillRect(x - 3, y - 6, 7, 3);
+  c.fillStyle = '#8b5c30'; c.fillRect(x - 7, y + 9, 15, 3);
+  if(active){
+    c.strokeStyle = '#f8df76'; c.lineWidth = 2;
+    c.beginPath(); c.arc(x, y, 23 + Math.sin(performance.now() / 220) * 4, 0, Math.PI * 2); c.stroke();
+  }
+}
+
+function drawPlayer(c, x, y){
+  const stride = moving ? Math.sin(walkAnimation) * 3 : 0;
+  // Ground shadow & boots
+  c.fillStyle = '#0008'; c.fillRect(x - 10, y + 12, 22, 6);
+  c.fillStyle = '#2d2118';
+  c.fillRect(x - 7, y + 7 + stride, 5, 6);
+  c.fillRect(x + 2, y + 7 - stride, 5, 6);
+
+  // Tunic with belt & trim
+  c.fillStyle = '#486b43'; c.fillRect(x - 8, y - 7, 16, 16);
+  c.fillStyle = '#628d5b'; c.fillRect(x - 6, y - 6, 5, 13);
+  c.fillStyle = '#7a5229'; c.fillRect(x - 8, y + 3, 16, 3);
+  c.fillStyle = '#f2c94c'; c.fillRect(x - 2, y + 2, 4, 5);
+
+  // Head, hair & expressive eyes
+  c.fillStyle = '#e0ac70'; c.fillRect(x - 7, y - 20, 14, 13);
+  c.fillStyle = '#b98249'; c.fillRect(x + (player.faceX >= 0 ? -7 : 3), y - 16, 4, 4);
+  c.fillStyle = '#3b281e'; c.fillRect(x - 8, y - 23, 16, 6);
+  c.fillRect(x + (player.faceX >= 0 ? -8 : 5), y - 20, 3, 9);
+  c.fillStyle = '#181412';
+  c.fillRect(x + (player.faceX >= 0 ? 2 : -5), y - 14, 3, 4);
+  c.fillStyle = '#fff9e6';
+  c.fillRect(x + (player.faceX >= 0 ? 3 : -4), y - 14, 1, 2);
+
+  // Shield & sword / golden greatsword
+  c.fillStyle = '#5c6b78'; c.fillRect(x - 13, y - 5, 5, 12);
+  c.fillStyle = '#9fb3c8'; c.fillRect(x - 12, y - 4, 3, 10);
+  if(hasGreatsword){
+    c.fillStyle = '#ffe066'; c.fillRect(x + 8, y - 13, 6, 21);
+    c.fillStyle = '#fff9db'; c.fillRect(x + 10, y - 12, 2, 18);
+    c.fillStyle = '#d48c00'; c.fillRect(x + 6, y + 5, 10, 3);
+  }else{
+    c.fillStyle = '#dce6f0'; c.fillRect(x + 8, y - 8, 4, 15);
+    c.fillStyle = '#8d5b2c'; c.fillRect(x + 7, y + 5, 6, 3);
+  }
+}
+
+function drawWorldView(){
+  cameraX = Math.max(0, Math.min(W - VIEW.w, player.x - VIEW.w / 2));
+  cameraY = Math.max(0, Math.min(H - VIEW.h, player.y - VIEW.h / 2));
+  ctx.clearRect(0, 0, VIEW.w, VIEW.h);
+  ctx.drawImage(worldCanvas, cameraX, cameraY, VIEW.w, VIEW.h, 0, 0, VIEW.w, VIEW.h);
+
+  scrolls.forEach((s, i) => {
+    const sx = s[0] - cameraX, sy = s[1] - cameraY;
+    if(sx < -55 || sx > VIEW.w + 55 || sy < -55 || sy > VIEW.h + 55) return;
+    drawScroll(ctx, sx, sy, i === qIndex, i < qIndex);
+    if(i > qIndex){
+      ctx.fillStyle = '#e58b7b'; ctx.font = 'bold 14px monospace'; ctx.textAlign = 'center';
+      ctx.fillText('🔒 LOCKED GATE', sx, sy - 24);
+    }else if(i === qIndex){
+      ctx.fillStyle = '#fff0b0'; ctx.font = 'bold 11px monospace'; ctx.textAlign = 'center';
+      ctx.fillText('NEXT SCROLL', sx, sy - 30);
+    }
+  });
+
+  const bob = moving ? Math.sin(walkAnimation) * 2 : 0;
+  drawPlayer(ctx, player.x - cameraX, player.y - cameraY + bob);
+
+  const [sx, sy] = scrolls[qIndex];
+  const distance = Math.round(Math.hypot(player.x - sx, player.y - sy));
+  ctx.fillStyle = '#101810dd'; ctx.fillRect(12, 12, 250, 45);
+  ctx.fillStyle = '#f4d486'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'left';
+  ctx.fillText('NEXT SCROLL: ' + (qIndex + 1) + ' / 20', 22, 30);
+  ctx.fillStyle = '#e0d6b7'; ctx.font = '11px monospace';
+  ctx.fillText('DISTANCE: ' + distance + ' PACES', 22, 47);
+
+  if(mapOpen){
+    ctx.fillStyle = '#050a08e8'; ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+    const mapW = 820, mapH = 546, mapX = (VIEW.w - mapW) / 2, mapY = (VIEW.h - mapH) / 2;
+    ctx.drawImage(worldCanvas, mapX, mapY, mapW, mapH);
+    ctx.strokeStyle = '#e8c779'; ctx.lineWidth = 4; ctx.strokeRect(mapX, mapY, mapW, mapH);
+
+    ctx.strokeStyle = '#ffffff33'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(mapX + mapW / 2, mapY); ctx.lineTo(mapX + mapW / 2, mapY + mapH);
+    ctx.moveTo(mapX, mapY + mapH / 2); ctx.lineTo(mapX + mapW, mapY + mapH / 2);
+    ctx.stroke();
+
+    scrolls.forEach((s, i) => {
+      const mx = mapX + (s[0] / W) * mapW, my = mapY + (s[1] / H) * mapH;
+      const isCurrent = i === qIndex;
+      const isDone = i < qIndex;
+      ctx.fillStyle = isCurrent ? '#fff078' : isDone ? '#6ebf77' : '#8d7853';
+      ctx.beginPath(); ctx.arc(mx, my, isCurrent ? 7 : isDone ? 5 : 4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#1b291e'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      if(isCurrent){
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(mx, my, 10 + Math.sin(performance.now() / 200) * 3, 0, Math.PI * 2); ctx.stroke();
+      }
+    });
+
+    const px = mapX + (player.x / W) * mapW, py = mapY + (player.y / H) * mapH;
+    ctx.fillStyle = '#64e6ff'; ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.fillStyle = '#111b13'; ctx.fillRect(mapX, mapY - 36, mapW, 30);
+    ctx.fillStyle = '#ffe3a1'; ctx.font = 'bold 16px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('VAST FOREST WORLD MAP', VIEW.w / 2, mapY - 16);
+    ctx.font = '11px monospace'; ctx.fillStyle = '#fff0c5';
+    ctx.fillText('YELLOW = NEXT TARGET   GREEN = CLEARED   GREY = LOCKED   [M] CLOSE MAP', VIEW.w / 2, mapY + mapH + 20);
+  }
+}
+
+function moveWorld(dt){
+  if(mapOpen){ moving = false; return; }
+  let dx = (keys.ArrowRight || keys.KeyD ? 1 : 0) - (keys.ArrowLeft || keys.KeyA ? 1 : 0);
+  let dy = (keys.ArrowDown || keys.KeyS ? 1 : 0) - (keys.ArrowUp || keys.KeyW ? 1 : 0);
+  moving = !!(dx || dy);
+  if(moving){
+    const len = Math.hypot(dx, dy);
+    dx /= len; dy /= len;
+    player.faceX = dx; player.faceY = dy;
+    const speed = 230;
+    const nextX = player.x + dx * speed * dt;
+    const nextY = player.y + dy * speed * dt;
+
+    // Prevent roaming past unreached clearings
+    const targetScroll = scrolls[qIndex];
+    const distTarget = Math.hypot(nextX - targetScroll[0], nextY - targetScroll[1]);
+    const prevScroll = qIndex > 0 ? scrolls[qIndex - 1] : [95, 100];
+    const distPrev = Math.hypot(nextX - prevScroll[0], nextY - prevScroll[1]);
+
+    if(distTarget < 350 || distPrev < 350 || Math.hypot(nextX - player.x, nextY - player.y) < 15){
+      player.x = Math.max(20, Math.min(W - 20, nextX));
+      player.y = Math.max(20, Math.min(H - 20, nextY));
+    }
+    walkAnimation += dt * 12;
+  }
+  const [sx, sy] = scrolls[qIndex];
+  const d = Math.hypot(player.x - sx, player.y - sy);
+  if(d < 65){
+    setText('hint', 'Scroll nearby! Press E to interact.');
+    if(keys.KeyE){ keys.KeyE = false; openQuestion(); }
+  }else{
+    setText('hint', 'Explore the forest and find the glowing scroll.');
+  }
+}
+
+function openQuestion(){
+  state = 'quiz';
+  $('quizModal').classList.remove('hidden');
+  const q = questions[qIndex];
+  setText('qTitle', 'LOST SCROLL ' + (qIndex + 1));
+  setText('qMeta', `Realm ${zoneFor(qIndex) + 1} · ${q.difficulty} · ${q.points} point${q.points > 1 ? 's' : ''} · ${q.topic}`);
+  $('qPrompt').innerHTML = q.prompt;
+  $('qFeedback').textContent = 'Choose the correct derivative.';
+  $('qTip').classList.add('hidden');
+  $('qTip').textContent = '';
+  $('continueBtn').classList.add('hidden');
+  const opts = $('qOptions');
+  opts.innerHTML = '';
+  q.options.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.type = 'button';
+    b.innerHTML = '<b>' + ('ABCD'[i]) + '.</b> ' + o;
+    b.onclick = () => answerQuestion(i);
+    opts.appendChild(b);
+  });
+  setText('mode', 'MATH TRIAL');
+}
+
+function answerQuestion(choice){
+  const q = questions[qIndex];
+  const buttons = [...$('qOptions').children];
+  buttons.forEach(b => b.disabled = true);
+  if(choice === q.answer){
+    score += q.points;
+    answers[qIndex] = {choice, correct: true};
+    buttons[choice].classList.add('correct');
+    $('qFeedback').innerHTML = '<b style="color:#a7e7a8">Correct!</b> The path opens. Prepare for a fight.';
+    setText('score', score + ' / 34');
+    setTimeout(() => { $('quizModal').classList.add('hidden'); startArena(false); }, 650);
+  }else{
+    wrong.push(qIndex);
+    answers[qIndex] = {choice, correct: false};
+    buttons[choice].classList.add('wrong');
+    buttons[q.answer].classList.add('correct');
+    $('qFeedback').innerHTML = '<b style="color:#f2a39a">Incorrect!</b> A mistake guardian has appeared. Defeat it, read the sign, then answer this scroll again.';
+    setTimeout(() => { $('quizModal').classList.add('hidden'); startArena(true); }, 850);
+  }
+}
+
+function getRoomEnemySpecs(index){
+  const room = index + 1;
+  if(room === 1) return {count: 2, type: 'slime'};
+  if(room === 2) return {count: 3, type: 'slime'};
+  if(room === 3) return {count: 4, type: 'slime'};
+  if(room === 4) return {count: 5, type: 'slime'};
+  if(room === 5) return {count: 5, type: 'slime', boss: true};
+
+  if(room === 6) return {count: 1, type: 'zombie'};
+  if(room === 7) return {count: 2, type: 'zombie'};
+  if(room === 8) return {count: 3, type: 'zombie'};
+  if(room === 9) return {count: 4, type: 'zombie'};
+  if(room === 10) return {count: 4, type: 'zombie', boss: true};
+
+  // Higher tentacle spam across rooms 11–15 to fit multi-target/AoE arsenal
+  if(room === 11) return {count: 9, type: 'tentacle'};
+  if(room === 12) return {count: 13, type: 'tentacle'};
+  if(room === 13) return {count: 17, type: 'tentacle'};
+  if(room === 14) return {count: 21, type: 'tentacle'};
+  if(room === 15) return {count: 25, type: 'tentacle', boss: true};
+
+  if(room === 16) return {count: 3, type: 'golem'};
+  if(room === 17) return {count: 6, type: 'golem'};
+  if(room === 18) return {count: 8, type: 'golem'};
+  if(room === 19) return {count: 10, type: 'golem'};
+  if(room === 20) return {count: 12, type: 'golem', boss: true};
+  return {count: 2, type: 'slime'};
+}
+
+function makeEnemy(type, x, y, hp0){
+  return {
+    type, x, y, hp: hp0, max: hp0,
+    r: type === 'boss' ? 38 : 17,
+    speed: type === 'boss' ? 52 : (type === 'tentacle' ? 0 : 48),
+    cool: 0, wind: 0, attack: 0, face: 1,
+    dead: false, flash: 0, lastDamaged: 0, fireTimer: 0, poolTimer: 0
+  };
+}
+
+function startArena(mistake){
+  state = 'arena';
+  arenaType = mistake ? 'mistake' : 'normal';
+  arenaTime = 0; attackCd = 0; projectiles = []; boss = null; enemies = [];
+  firePatches = []; poisonPools = []; bombs = []; darts = []; lavaSpawnTimer = 0; poisonTimer = 0;
+  player.x = 480; player.y = 430; player.faceX = 0; player.faceY = -1; invuln = 0;
+
+  // Heal player after every fight
+  hp = maxHp;
+  updateHud();
+
+  if(mistake){
+    enemies = [makeEnemy('mistake', 480, 210, 2)];
+    tipText = questions[qIndex].tip;
+    setText('objective', 'MISTAKE ENCOUNTER — defeat the guardian, read the sign, and retry the question.');
+    setText('hint', 'The sign beside the arena contains a useful tip.');
+  }else{
+    const spec = getRoomEnemySpecs(qIndex);
+    enemies = [];
+    for(let i = 0; i < spec.count; i++){
+      const rx = 120 + Math.random() * 720;
+      const ry = 130 + Math.random() * 260;
+      // Slimes: 2 HP, Zombies: 5 HP (3 Greatsword hits), Tentacles: 1 HP, Golems: 9 HP
+      const hpVal = spec.type === 'slime' ? 2 : spec.type === 'zombie' ? 5 : spec.type === 'tentacle' ? 1 : 9;
+      enemies.push(makeEnemy(spec.type, rx, ry, hpVal));
+    }
+    tipText = '';
+    setText('objective', `Room ${qIndex + 1} — Defeat all enemies to unlock the path.`);
+    setText('hint', 'Move to dodge. Use your weapons to defeat enemies.');
+    if(spec.boss){
+      setTimeout(() => { if(state === 'arena') spawnBoss(); }, 1000);
+    }
+  }
+  setText('mode', mistake ? 'LOCKED ARENA' : 'MONSTER ARENA');
+}
+
+function spawnBoss(){
+  if(boss || arenaType === 'mistake') return;
+  const z = zoneFor(qIndex);
+  // Boss HP scaled to match upgraded mob durability and player weapons
+  const bossHpMap = [16, 22, 26, 36];
+  const bossHp = bossHpMap[Math.min(3, z)];
+  boss = makeEnemy('boss', 480, 170, bossHp);
+  boss.name = realms[z].boss;
+  boss.speed = 52; boss.cool = 1; boss.wind = 0; boss.attack = 0; boss.lastDamaged = 0; boss.fireTimer = 0; boss.poolTimer = 0;
+  setText('objective', 'BOSS: ' + boss.name + ' — dodge the telegraphed attacks!');
+  setText('mode', 'BOSS ARENA');
+  setText('hint', 'The glowing ancient seal can instantly end this boss fight. Press E beside it.');
+}
+
+function updateHud(){
+  setText('hp', Math.ceil(hp) + ' / ' + maxHp);
+  setText('score', score + ' / 34');
+  setText('progress', qIndex + ' / 20');
+  setText('realm', realms[Math.min(3, zoneFor(qIndex))].name);
+
+  let wText = hasGreatsword ? '🗡 GOLDEN GREATSWORD' : '🗡 SWORD';
+  if(hasDarts) wText += ' | 🎯 DARTS (' + dartsAmmo + '/' + maxDarts + ')';
+  if(hasBombs) wText += ' | 💣 BOMBS (' + bombsAmmo + '/' + maxBombs + ')';
+  setText('weaponHud', wText);
+
+  if(hasDarts || hasBombs){
+    $('abilityMeters').classList.remove('hidden');
+  }else{
+    $('abilityMeters').classList.add('hidden');
+  }
+
+  if(hasDarts){
+    $('dartMeterWrap').classList.remove('hidden');
+    const dartPct = dartsAmmo >= maxDarts ? 100 : (dartsRechargeTimer / 4.0) * 100;
+    $('dartMeterFill').style.width = Math.max(0, Math.min(100, dartPct)) + '%';
+    setText('dartCdText', dartsAmmo >= maxDarts ? 'FULL' : (4.0 - dartsRechargeTimer).toFixed(1) + 's');
+  }else{
+    $('dartMeterWrap').classList.add('hidden');
+  }
+
+  if(hasBombs){
+    $('bombMeterWrap').classList.remove('hidden');
+    const bombPct = bombsAmmo >= maxBombs ? 100 : (bombsRechargeTimer / 10.0) * 100;
+    $('bombMeterFill').style.width = Math.max(0, Math.min(100, bombPct)) + '%';
+    setText('bombCdText', bombsAmmo >= maxBombs ? 'FULL' : (10.0 - bombsRechargeTimer).toFixed(1) + 's');
+  }else{
+    $('bombMeterWrap').classList.add('hidden');
+  }
+
+  let cText = 'Move: WASD / arrows · ' + (hasGreatsword ? 'Greatsword' : 'Sword') + ': SPACE · Interact: E';
+  if(hasDarts) cText += ' · Darts: Q';
+  if(hasBombs) cText += ' · Bombs: R';
+  setText('controlsGuide', cText);
+}
+
+function damagePlayer(amount = 1, isPoison = false){
+  if(invuln > 0 && !isPoison) return;
+  hp -= amount;
+  if(!isPoison) invuln = 1.0;
+  shake = 0.2;
+  updateHud();
+  if(hp <= 0){
+    hp = maxHp;
+    player.x = 480; player.y = 430;
+    enemies.forEach(e => {
+      e.x = 480 + (Math.random() * 180 - 90);
+      e.y = 190 + Math.random() * 80;
+      e.hp = e.max; e.dead = false; e.wind = 0; e.cool = 1;
+    });
+    if(boss){ boss.hp = boss.max; boss.x = 480; boss.y = 170; boss.wind = 0; boss.cool = 1; }
+    updateHud();
+    setText('hint', 'Knocked down! Health restored; keep fighting.');
+  }
+}
+
+function fireDart(){
+  if(!hasDarts || dartsAmmo <= 0) return;
+  dartsAmmo--;
+  // Reset recharge timer per use so full cooldown is required after each shot
+  dartsRechargeTimer = 0;
+  updateHud();
+  darts.push({x: player.x, y: player.y, vx: player.faceX * 300, vy: player.faceY * 300, life: 3});
+}
+
+function placeBomb(){
+  if(!hasBombs || bombsAmmo <= 0) return;
+  bombsAmmo--;
+  // Reset recharge timer per use so full cooldown is required after each bomb
+  bombsRechargeTimer = 0;
+  updateHud();
+  bombs.push({x: player.x, y: player.y, timer: 5.0});
+}
+
+function swordAttack(){
+  if(attackCd > 0) return;
+  attackCd = 0.34;
+  const range = hasGreatsword ? 105 : 74;
+  const dmg = hasGreatsword ? 2 : 1;
+  const targets = [...enemies.filter(e => !e.dead), ...(boss ? [boss] : [])];
+  for(const e of targets){
+    const dx = e.x - player.x, dy = e.y - player.y;
+    const dist = Math.hypot(dx, dy);
+    const dot = dx * player.faceX + dy * player.faceY;
+    if(dist < range && dot > -15){
+      e.hp -= dmg;
+      e.flash = 0.16;
+      e.lastDamaged = arenaTime;
+      if(e.hp <= 0) e.dead = true;
+    }
+  }
+}
+
+function spawnFirePatch(cx, cy, gridRadius = 1, maxAllowed = 4, duration = 4.0){
+  if(firePatches.length >= maxAllowed) return;
+  firePatches.push({x: cx, y: cy, r: gridRadius * 25, timer: duration});
+}
+
+function spawnPoisonPool(cx, cy, gridRadius = 1, duration = 5.0){
+  if(poisonPools.length >= 16) return;
+  poisonPools.push({x: cx, y: cy, r: gridRadius * 25, timer: duration, tickAt: arenaTime + 1.0});
+}
+
+function updateArena(dt){
+  arenaTime += dt;
+  attackCd = Math.max(0, attackCd - dt);
+  invuln = Math.max(0, invuln - dt);
+
+  let hudDirty = false;
+  if(hasDarts && dartsAmmo < maxDarts){
+    dartsRechargeTimer += dt;
+    if(dartsRechargeTimer >= 4.0){ dartsAmmo++; dartsRechargeTimer = 0; }
+    hudDirty = true;
+  }
+  if(hasBombs && bombsAmmo < maxBombs){
+    bombsRechargeTimer += dt;
+    if(bombsRechargeTimer >= 10.0){ bombsAmmo++; bombsRechargeTimer = 0; }
+    hudDirty = true;
+  }
+  if(hudDirty) updateHud();
+
+  if(poisonTimer > 0){
+    poisonTimer -= dt;
+    if(arenaTime >= poisonTicks){
+      damagePlayer(poisonDmg, true);
+      poisonTicks = arenaTime + (poisonDmg === 1 && poisonTimer > 5 ? 2.0 : 1.0);
+    }
+  }
+
+  let dx = (keys.ArrowRight || keys.KeyD ? 1 : 0) - (keys.ArrowLeft || keys.KeyA ? 1 : 0);
+  let dy = (keys.ArrowDown || keys.KeyS ? 1 : 0) - (keys.ArrowUp || keys.KeyW ? 1 : 0);
+  if(dx || dy){
+    const l = Math.hypot(dx, dy);
+    dx /= l; dy /= l;
+    player.faceX = dx; player.faceY = dy;
+    player.x = Math.max(55, Math.min(905, player.x + dx * 235 * dt));
+    player.y = Math.max(90, Math.min(545, player.y + dy * 235 * dt));
+  }
+
+  if(keys.Space){ keys.Space = false; swordAttack(); }
+  if(keys.KeyQ){ keys.KeyQ = false; fireDart(); }
+  if(keys.KeyR){ keys.KeyR = false; placeBomb(); }
+
+  if(boss && keys.KeyE && Math.hypot(player.x - 480, player.y - 490) < 85){
+    keys.KeyE = false;
+    boss.hp = 0; boss.dead = true;
+    setText('hint', 'Ancient seal activated. The boss has been defeated.');
+  }
+
+  if(qIndex === 19 && boss && !boss.dead){
+    lavaSpawnTimer += dt;
+    if(lavaSpawnTimer >= 30.0){
+      lavaSpawnTimer = 0;
+      enemies.push(makeEnemy('golem', 120, 140, 4));
+      setText('hint', 'A new Fire Golem emerged from the lava pit!');
+    }
+  }
+
+  bombs.forEach(b => {
+    b.timer -= dt;
+    if(b.timer <= 0){
+      const targets = [...enemies.filter(e => !e.dead), ...(boss ? [boss] : [])];
+      targets.forEach(e => {
+        if(Math.hypot(e.x - b.x, e.y - b.y) < 110){
+          e.hp -= 3; e.flash = 0.3; e.lastDamaged = arenaTime;
+          if(e.hp <= 0) e.dead = true;
+        }
+      });
+    }
+  });
+  bombs = bombs.filter(b => b.timer > 0);
+
+  darts.forEach(d => {
+    const targets = [...enemies.filter(e => !e.dead), ...(boss ? [boss] : [])];
+    let nearest = null, minDist = 999;
+    targets.forEach(e => {
+      const dist = Math.hypot(e.x - d.x, e.y - d.y);
+      if(dist < minDist){ minDist = dist; nearest = e; }
+    });
+    if(nearest){
+      const angle = Math.atan2(nearest.y - d.y, nearest.x - d.x);
+      d.vx = Math.cos(angle) * 350;
+      d.vy = Math.sin(angle) * 350;
+    }
+    d.x += d.vx * dt; d.y += d.vy * dt; d.life -= dt;
+    targets.forEach(e => {
+      if(Math.hypot(e.x - d.x, e.y - d.y) < 22){
+        e.hp -= 2; e.flash = 0.2; e.lastDamaged = arenaTime;
+        if(e.hp <= 0) e.dead = true;
+        d.life = 0;
+      }
+    });
+  });
+  darts = darts.filter(d => d.life > 0);
+
+  firePatches.forEach(fp => {
+    fp.timer -= dt;
+    if(Math.hypot(player.x - fp.x, player.y - fp.y) < fp.r){
+      damagePlayer(1 * dt, true);
+    }
+  });
+  firePatches = firePatches.filter(fp => fp.timer > 0);
+
+  // 3x3 poison pools lasting 5 seconds left by tentacles and the Hydra boss
+  poisonPools.forEach(pp => {
+    pp.timer -= dt;
+    if(Math.hypot(player.x - pp.x, player.y - pp.y) < pp.r && arenaTime >= pp.tickAt){
+      damagePlayer(1, true);
+      pp.tickAt = arenaTime + 1.0;
+    }
+  });
+  poisonPools = poisonPools.filter(pp => pp.timer > 0);
+
+  const targets = [...enemies, ...(boss ? [boss] : [])];
+  for(const e of targets){
+    if(e.dead) continue;
+    e.flash = Math.max(0, e.flash - dt);
+    e.cool -= dt;
+
+    if(e.type === 'boss' && zoneFor(qIndex) === 0){
+      if(arenaTime - e.lastDamaged >= 3.0){
+        e.hp = Math.min(e.max, e.hp + dt * 1.0);
+      }
+    }
+
+    if(e.type === 'tentacle' || (e.type === 'boss' && zoneFor(qIndex) === 2)){
+      e.poolTimer += dt;
+      if(e.poolTimer >= (e.type === 'boss' ? 2.2 : 3.2)){
+        e.poolTimer = 0;
+        spawnPoisonPool(e.x, e.y, 1, 5.0);
+      }
+    }
+
+    if(e.type === 'golem' || (e.type === 'boss' && zoneFor(qIndex) === 3)){
+      e.fireTimer += dt;
+      if(e.fireTimer >= 5.0){
+        e.fireTimer = 0;
+        const isBossDragon = (e.type === 'boss');
+        spawnFirePatch(e.x, e.y, isBossDragon ? 2 : 1, isBossDragon ? 15 : 4, 4.0);
+      }
+    }
+
+    if(e.wind > 0){
+      e.wind -= dt;
+      if(e.wind <= 0){
+        e.attack = e.type === 'tentacle' ? 0.28 : 0.18;
+        const vx = player.x - e.x, vy = player.y - e.y, l = Math.hypot(vx, vy) || 1;
+        if(e.type === 'boss' && zoneFor(qIndex) === 3){
+          projectiles.push({x: e.x, y: e.y, vx: (vx / l) * 145, vy: (vy / l) * 145, life: 3});
+        }else if(e.type === 'tentacle'){
+          // Tentacles remain stationary and lash out with a wide strike
+          e.lashX = vx / l; e.lashY = vy / l; e.lashTimer = 0.22;
+        }else{
+          e.dashX = vx / l; e.dashY = vy / l; e.dash = 0.28;
+        }
+      }
+    }else if(e.dash > 0){
+      e.dash -= dt;
+      e.x += e.dashX * 240 * dt;
+      e.y += e.dashY * 240 * dt;
+      if(Math.hypot(e.x - player.x, e.y - player.y) < 28){
+        const baseDmg = (e.type === 'golem') ? 5 : (e.type === 'boss' && zoneFor(qIndex) === 1) ? 2 : (e.type === 'boss' && zoneFor(qIndex) === 3) ? 10 : 1;
+        damagePlayer(baseDmg);
+        if(e.type === 'zombie' || (e.type === 'boss' && zoneFor(qIndex) === 1)){
+          e.hp = Math.min(e.max, e.hp + 1);
+        }
+        if(e.type === 'tentacle'){
+          poisonTimer = 10.0; poisonDmg = 1; poisonTicks = arenaTime + 2.0;
+        }else if(e.type === 'boss' && zoneFor(qIndex) === 2){
+          poisonTimer = 10.0; poisonDmg = 1; poisonTicks = arenaTime + 1.0;
+        }
+      }
+    }else{
+      const vx = player.x - e.x, vy = player.y - e.y, l = Math.hypot(vx, vy) || 1;
+      // Tentacles never move (speed = 0), while other enemies advance toward the player
+      if(l > 34 && e.speed > 0){
+        e.x += (vx / l) * e.speed * dt;
+        e.y += (vy / l) * e.speed * dt;
+      }
+      const triggerRange = e.type === 'tentacle' ? 330 : 260;
+      if(e.cool <= 0 && l < triggerRange){
+        e.wind = e.type === 'boss' ? 0.8 : e.type === 'tentacle' ? 0.34 : 0.55;
+        e.cool = e.type === 'boss' ? 2.5 : e.type === 'tentacle' ? 1.05 : 1.8;
+      }
+    }
+
+    if(e.lashTimer > 0) e.lashTimer -= dt;
+    const hitRadius = e.type === 'tentacle' ? 66 : 28;
+    if(Math.hypot(e.x - player.x, e.y - player.y) < hitRadius && e.attack > 0){
+      const baseDmg = (e.type === 'golem') ? 5 : (e.type === 'boss' && zoneFor(qIndex) === 1) ? 2 : (e.type === 'boss' && zoneFor(qIndex) === 3) ? 10 : 1;
+      damagePlayer(baseDmg);
+      if(e.type === 'tentacle'){
+        poisonTimer = 10.0; poisonDmg = 1; poisonTicks = arenaTime + 2.0;
+      }
+      e.attack = 0;
+    }
+  }
+
+  if(qIndex === 19 && boss && !boss.dead){
+    lavaSpawnTimer += dt;
+    if(lavaSpawnTimer >= 30.0){
+      lavaSpawnTimer = 0;
+      enemies.push(makeEnemy('golem', 120, 140, 9));
+      setText('hint', 'A new Fire Golem emerged from the lava pit!');
+    }
+  }
+
+  for(const p of projectiles){
+    p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+    if(Math.hypot(p.x - player.x, p.y - player.y) < 18){ damagePlayer(2); p.life = 0; }
+  }
+  projectiles = projectiles.filter(p => p.life > 0 && p.x > 0 && p.x < 960 && p.y > 0 && p.y < 600);
+
+  enemies = enemies.filter(e => !e.dead);
+  if(arenaType === 'mistake' && enemies.length === 0){
+    state = 'quiz';
+    $('quizModal').classList.remove('hidden');
+    setText('qTitle', 'THE SIGN OF CORRECTION');
+    setText('qMeta', 'A nearby wooden sign offers a hint');
+    $('qPrompt').textContent = 'Read the tip, then answer the same question correctly to unlock the gate.';
+    $('qOptions').innerHTML = '';
+    $('qFeedback').textContent = '';
+    $('qTip').textContent = tipText;
+    $('qTip').classList.remove('hidden');
+    const q = questions[qIndex];
+    q.options.forEach((o, i) => {
+      const b = document.createElement('button');
+      b.className = 'option';
+      b.type = 'button';
+      b.innerHTML = '<b>' + ('ABCD'[i]) + '.</b> ' + o;
+      b.onclick = () => answerQuestion(i);
+      $('qOptions').appendChild(b);
+    });
+    $('continueBtn').classList.add('hidden');
+    return;
+  }
+
+  if(arenaType === 'normal' && enemies.length === 0 && !boss){
+    if((qIndex + 1) % 5 === 0) spawnBoss();
+    else finishEncounter();
+  }
+  if(boss && boss.hp <= 0){ boss = null; finishEncounter(); }
+}
+
+function finishEncounter(){
+  hp = maxHp;
+  updateHud();
+  const isBossRoom = (qIndex + 1) % 5 === 0;
+  if(isBossRoom) triggerBossVictoryReward();
+  else advanceToNextRoom();
+}
+
+function triggerBossVictoryReward(){
+  state = 'reward';
+  maxHp += 5;
+  hp = maxHp;
+  let titleText = '', descText = '';
+
+  if(qIndex === 4){
+    hasGreatsword = true;
+    titleText = 'UNLOCKED: GOLDEN GREATSWORD 🗡';
+    descText = 'Sweeps further and deals 2 damage per strike!';
+  }else if(qIndex === 9){
+    hasDarts = true;
+    $('btnDart').classList.remove('hidden');
+    titleText = 'UNLOCKED: HOMING MAGIC DARTS 🎯 (Q)';
+    descText = 'Fires auto-seeking darts dealing 2 damage. Recharges 1 dart every 4 seconds (Max 5).';
+  }else if(qIndex === 14){
+    hasBombs = true;
+    $('btnBomb').classList.remove('hidden');
+    titleText = 'UNLOCKED: MAGIC ARCANE BOMBS 💣 (R)';
+    descText = 'Places a 5-second timed bomb dealing 3 area damage. Recharges 1 bomb every 10 seconds (Max 3).';
+  }else{
+    titleText = 'FINAL BOSS DEFEATED!';
+    descText = 'You have conquered all four realms of the forest!';
+  }
+
+  updateHud();
+  $('rewardContent').innerHTML = `
+    <div class="reward-card">
+      <h3>${titleText}</h3>
+      <p>${descText}</p>
+      <p style="color:#8fc58b"><b>+5 MAX HEALTH GAINED</b> (Current Max HP: ${maxHp})</p>
+      <p style="color:#e8d5a2">Your health has been fully restored.</p>
+    </div>
+  `;
+  $('rewardModal').classList.remove('hidden');
+}
+
+$('claimRewardBtn').onclick = () => {
+  $('rewardModal').classList.add('hidden');
+  advanceToNextRoom();
+};
+
+function advanceToNextRoom(){
+  state = 'world';
+  qIndex++;
+  updateHud();
+  startForestMusic();
+  if(qIndex >= 20){ showResults(); return; }
+  const [x, y] = scrolls[qIndex];
+  player.x = x - 80;
+  player.y = y + 55;
+  setText('objective', 'The arena is clear. Find the next glowing scroll.');
+  setText('mode', 'EXPLORATION');
+  setText('hint', 'Follow the path to the next scroll clearing.');
+}
+
+function showResults(){
+  state = 'results';
+  $('game').classList.add('hidden');
+  $('results').classList.remove('hidden');
+  setText('finalScore', score + ' / 34');
+  setText('summary', `You answered ${answers.filter(a => a && a.correct).length} questions correctly on the first try and cleared all four realms. ${wrong.length} mistake encounter(s) were triggered.`);
+  const r = $('review');
+  r.innerHTML = '';
+  wrong.forEach(i => {
+    const q = questions[i];
+    const d = document.createElement('div');
+    d.className = 'result-card';
+    d.innerHTML = `<b>${q.level} · ${q.topic}</b><br>${q.prompt}<br><b>Correct answer:</b> ${'ABCD'[q.answer]}. ${q.options[q.answer]}<br><b>Tip:</b> ${q.tip}`;
+    r.appendChild(d);
+  });
+  if(!wrong.length) r.innerHTML = '<div class="result-card">Perfect expedition: no incorrect answers.</div>';
+}
+
+function drawArena(){
+  ctx.fillStyle = '#273b2b'; ctx.fillRect(0, 0, 960, 600);
+  ctx.fillStyle = '#38523a';
+  for(let y = 30; y < 600; y += 48){
+    for(let x = 25; x < 960; x += 48){
+      ctx.fillRect(x, y, 2, 2);
+      ctx.fillRect(x + 20, y + 18, 2, 2);
+    }
+  }
+  ctx.fillStyle = '#766447'; ctx.fillRect(50, 70, 860, 480);
+  ctx.fillStyle = '#8b7651'; ctx.fillRect(60, 80, 840, 460);
+  ctx.fillStyle = '#a38a5b'; ctx.fillRect(70, 90, 820, 420);
+  ctx.fillStyle = '#5a4934'; ctx.fillRect(80, 100, 800, 400);
+
+  for(let y = 110; y < 500; y += 32){
+    for(let x = 90; x < 870; x += 32){
+      ctx.fillStyle = ((x / 32 + y / 32) | 0) % 2 ? '#746348' : '#806d4c';
+      ctx.fillRect(x, y, 30, 30);
+    }
+  }
+
+  if(qIndex === 19){
+    ctx.fillStyle = '#e35439'; ctx.beginPath(); ctx.arc(120, 140, 40, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffb347'; ctx.beginPath(); ctx.arc(120, 140, 25, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = '10px monospace'; ctx.fillText('LAVA PIT', 95, 145);
+  }
+
+  firePatches.forEach(fp => {
+    ctx.fillStyle = '#ff512288'; ctx.beginPath(); ctx.arc(fp.x, fp.y, fp.r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffc44d'; ctx.beginPath(); ctx.arc(fp.x, fp.y, fp.r * 0.5, 0, Math.PI * 2); ctx.fill();
+  });
+
+  poisonPools.forEach(pp => {
+    ctx.fillStyle = '#39a85477'; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#8ef07d88'; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.r * 0.5, 0, Math.PI * 2); ctx.fill();
+  });
+
+  bombs.forEach(b => {
+    ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(b.x, b.y, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ff3333'; ctx.fillRect(b.x - 2, b.y - 16, 4, 6);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 11px monospace'; ctx.fillText((b.timer | 0) + 1, b.x - 3, b.y + 4);
+  });
+
+  darts.forEach(d => {
+    ctx.fillStyle = '#64e6ff'; ctx.beginPath(); ctx.arc(d.x, d.y, 6, 0, Math.PI * 2); ctx.fill();
+  });
+
+  ctx.fillStyle = '#4e3425'; ctx.fillRect(90, 450, 64, 12); ctx.fillRect(116, 390, 12, 70);
+  ctx.fillStyle = '#c39a5b'; ctx.fillRect(91, 390, 62, 52);
+  ctx.fillStyle = '#fff0bf'; ctx.font = 'bold 10px monospace';
+  ctx.fillText('TIP SIGN', 98, 408);
+  ctx.fillText(arenaType === 'mistake' ? 'READ ME' : 'STAY SHARP', 96, 424);
+
+  if(boss){
+    ctx.fillStyle = '#171b13'; ctx.fillRect(445, 465, 70, 70);
+    ctx.fillStyle = '#e7c96f'; ctx.fillRect(455, 475, 50, 50);
+    ctx.fillStyle = '#6c542c'; ctx.fillRect(464, 484, 32, 32);
+    ctx.fillStyle = '#fff0a3'; ctx.fillRect(475, 495, 10, 10);
+    ctx.fillStyle = '#fff1b9'; ctx.font = '11px monospace'; ctx.fillText('E: SEAL', 448, 455);
+  }
+
+  for(const p of projectiles){
+    ctx.fillStyle = '#ffb15e'; ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
+    ctx.fillStyle = '#ffe5a0'; ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+  }
+
+  for(const e of enemies) drawEnemy(e);
+  if(boss) drawEnemy(boss);
+  drawPlayer(ctx, player.x, player.y);
+
+  if(attackCd > 0.20){
+    const range = hasGreatsword ? 40 : 25;
+    const sx = player.x + player.faceX * 28, sy = player.y + player.faceY * 28;
+    ctx.strokeStyle = hasGreatsword ? '#ffd700' : '#e8f0d0';
+    ctx.lineWidth = hasGreatsword ? 10 : 7;
+    ctx.beginPath(); ctx.arc(sx, sy, range, -1.2, 1.2); ctx.stroke();
+  }
+
+  ctx.fillStyle = '#101810dd'; ctx.fillRect(15, 14, 300, 32);
+  ctx.fillStyle = '#f4dda7'; ctx.font = 'bold 14px monospace';
+  ctx.fillText(arenaType === 'mistake' ? 'MISTAKE GUARDIAN' : 'ROOM ' + (qIndex + 1) + ' ENCOUNTER', 26, 35);
+
+  if(boss){
+    ctx.fillStyle = '#1b1010dd'; ctx.fillRect(620, 14, 325, 32);
+    ctx.fillStyle = '#f2d48c';
+    ctx.fillText(boss.name + '  HP ' + Math.max(0, Math.ceil(boss.hp)) + ' / ' + boss.max, 632, 35);
+  }
+
+  // Live cooldown meter overlays during arena combat
+  let meterY = 56;
+  if(hasDarts){
+    const pct = dartsAmmo >= maxDarts ? 1 : (dartsRechargeTimer / 4.0);
+    ctx.fillStyle = '#101810dd'; ctx.fillRect(15, meterY, 210, 22);
+    ctx.fillStyle = '#3bc9db'; ctx.fillRect(19, meterY + 4, (202 * pct), 14);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 11px monospace';
+    ctx.fillText(`DARTS ${dartsAmmo}/${maxDarts} ${dartsAmmo >= maxDarts ? 'READY' : (4 - dartsRechargeTimer).toFixed(1) + 's'}`, 24, meterY + 15);
+    meterY += 26;
+  }
+  if(hasBombs){
+    const pct = bombsAmmo >= maxBombs ? 1 : (bombsRechargeTimer / 10.0);
+    ctx.fillStyle = '#101810dd'; ctx.fillRect(15, meterY, 210, 22);
+    ctx.fillStyle = '#f08c00'; ctx.fillRect(19, meterY + 4, (202 * pct), 14);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 11px monospace';
+    ctx.fillText(`BOMBS ${bombsAmmo}/${maxBombs} ${bombsAmmo >= maxBombs ? 'READY' : (10 - bombsRechargeTimer).toFixed(1) + 's'}`, 24, meterY + 15);
+  }
+}
+
+function drawEnemy(e){
+  const x = e.x, y = e.y;
+  const pulse = Math.sin(arenaTime * 6);
+  if(e.wind > 0){
+    const warnR = e.type === 'tentacle' ? 66 : 35 + Math.sin(arenaTime * 24) * 6;
+    ctx.strokeStyle = e.type === 'tentacle' ? '#9be15d' : '#f7d36d';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(x, y, warnR, 0, Math.PI * 2); ctx.stroke();
+  }
+  if(e.lashTimer > 0 && e.type === 'tentacle'){
+    ctx.strokeStyle = '#74e665';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(x, y, 56, Math.atan2(e.lashY, e.lashX) - 0.85, Math.atan2(e.lashY, e.lashX) + 0.85);
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#0008'; ctx.fillRect(x - e.r, y + e.r - 2, e.r * 2, 6);
+
+  if(e.type === 'boss'){
+    const z = zoneFor(qIndex);
+    if(z === 0){
+      // Slime King with layered jelly highlights, crown jewels & floating bones
+      ctx.fillStyle = '#489943'; ctx.fillRect(x - 36, y - 24, 72, 48);
+      ctx.fillStyle = '#75c95f'; ctx.fillRect(x - 32, y - 30, 64, 44);
+      ctx.fillStyle = '#a8f07d'; ctx.fillRect(x - 22, y - 26, 20, 12);
+      ctx.fillStyle = '#e9e4d4'; ctx.fillRect(x - 20, y - 2, 9, 4); ctx.fillRect(x + 12, y + 4, 8, 4);
+      ctx.fillStyle = '#f2c94c'; ctx.fillRect(x - 18, y - 42, 36, 12);
+      ctx.fillStyle = '#e03131'; ctx.fillRect(x - 3, y - 39, 6, 6);
+      ctx.fillStyle = '#183c25'; ctx.fillRect(x - 18, y - 11, 8, 8); ctx.fillRect(x + 10, y - 11, 8, 8);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(x - 16, y - 10, 3, 3); ctx.fillRect(x + 12, y - 10, 3, 3);
+    }else if(z === 1){
+      // Zombie Queen with royal crown, tattered mantle & glowing eyes
+      ctx.fillStyle = '#43284d'; ctx.fillRect(x - 32, y - 12, 64, 48);
+      ctx.fillStyle = '#6b8c67'; ctx.fillRect(x - 26, y - 22, 52, 34);
+      ctx.fillStyle = '#b9c58a'; ctx.fillRect(x - 22, y - 42, 44, 22);
+      ctx.fillStyle = '#9b59b6'; ctx.fillRect(x - 20, y - 51, 40, 9);
+      ctx.fillStyle = '#ffd43b'; ctx.fillRect(x - 12, y - 49, 4, 4); ctx.fillRect(x + 8, y - 49, 4, 4);
+      ctx.fillStyle = '#ff6b6b'; ctx.fillRect(x - 14, y - 34, 8, 7); ctx.fillRect(x + 6, y - 34, 8, 7);
+    }else if(z === 2){
+      // Plant Hydra with three articulated heads & root base
+      ctx.fillStyle = '#2d5430'; ctx.fillRect(x - 34, y - 14, 68, 40);
+      for(let i = -1; i <= 1; i++){
+        const hx = x + i * 24 + Math.sin(arenaTime * 5 + i) * 3;
+        const hy = y - 38 - (i === 0 ? 10 : 0);
+        ctx.fillStyle = '#4e8f48'; ctx.fillRect(hx - 7, hy + 10, 14, 26);
+        ctx.fillStyle = '#74b85c'; ctx.fillRect(hx - 11, hy - 8, 22, 18);
+        ctx.fillStyle = '#fff59d'; ctx.fillRect(hx - 7, hy - 3, 4, 4); ctx.fillRect(hx + 3, hy - 3, 4, 4);
+        ctx.fillStyle = '#f8f9fa'; ctx.fillRect(hx - 6, hy + 7, 3, 4); ctx.fillRect(hx + 3, hy + 7, 3, 4);
+      }
+    }else{
+      // Ember Dragon with wings, horns, magma chest & tail
+      ctx.fillStyle = '#5c2419';
+      ctx.fillRect(x - 56, y - 24 + pulse * 3, 22, 18);
+      ctx.fillRect(x + 34, y - 24 + pulse * 3, 22, 18);
+      ctx.fillStyle = '#8f3f27'; ctx.fillRect(x - 32, y - 24, 64, 52);
+      ctx.fillStyle = '#ff922b'; ctx.fillRect(x - 10, y - 10, 20, 18);
+      ctx.fillStyle = '#e17b3d'; ctx.fillRect(x - 24, y - 42, 48, 22);
+      ctx.fillStyle = '#ffe066'; ctx.fillRect(x - 22, y - 52, 8, 12); ctx.fillRect(x + 14, y - 52, 8, 12);
+      ctx.fillStyle = '#fff3bf'; ctx.fillRect(x - 16, y - 34, 8, 7); ctx.fillRect(x + 8, y - 34, 8, 7);
+    }
+  }else if(e.type === 'mistake'){
+    ctx.fillStyle = '#6e352c'; ctx.fillRect(x - 19, y - 21, 38, 42);
+    ctx.fillStyle = '#bb725a'; ctx.fillRect(x - 16, y - 18, 32, 36);
+    ctx.fillStyle = '#ff8787'; ctx.fillRect(x - 10, y - 8, 6, 5); ctx.fillRect(x + 4, y - 8, 6, 5);
+  }else{
+    if(e.type === 'slime'){
+      ctx.fillStyle = '#4e9649'; ctx.fillRect(x - 16, y - 10, 32, 23);
+      ctx.fillStyle = '#75c95f'; ctx.fillRect(x - 14, y - 14, 28, 22);
+      ctx.fillStyle = '#b2e77c'; ctx.fillRect(x - 9, y - 19, 18, 7);
+      ctx.fillStyle = '#173822'; ctx.fillRect(x - 8, y - 5, 4, 5); ctx.fillRect(x + 4, y - 5, 4, 5);
+    }else if(e.type === 'zombie'){
+      ctx.fillStyle = '#49543d'; ctx.fillRect(x - 14, y - 4, 28, 22);
+      ctx.fillStyle = '#82916a'; ctx.fillRect(x - 12, y - 10, 24, 14);
+      ctx.fillStyle = '#d9d0a2'; ctx.fillRect(x - 10, y - 22, 20, 14);
+      ctx.fillStyle = '#ff6b6b'; ctx.fillRect(x - 7, y - 17, 4, 4); ctx.fillRect(x + 3, y - 17, 4, 4);
+    }else if(e.type === 'tentacle'){
+      // Rooted stationary tentacle stalk with wide lash crown
+      ctx.fillStyle = '#2b4d32'; ctx.fillRect(x - 14, y + 6, 28, 12);
+      ctx.fillStyle = '#4c985b'; ctx.fillRect(x - 8, y - 14, 16, 24);
+      ctx.fillStyle = '#8fbd6c'; ctx.fillRect(x - 18, y - 24, 36, 12);
+      ctx.fillStyle = '#142619'; ctx.fillRect(x - 6, y - 10, 12, 6);
+    }else{
+      // Fire Golem with obsidian plates & glowing magma cracks
+      ctx.fillStyle = '#3d2c26'; ctx.fillRect(x - 17, y - 16, 34, 34);
+      ctx.fillStyle = '#7a4b38'; ctx.fillRect(x - 14, y - 13, 28, 28);
+      ctx.fillStyle = '#ff922b'; ctx.fillRect(x - 4, y - 11, 8, 22);
+      ctx.fillStyle = '#f0a14e'; ctx.fillRect(x - 9, y - 21, 18, 7);
+      ctx.fillStyle = '#ffe066'; ctx.fillRect(x - 8, y - 7, 5, 4); ctx.fillRect(x + 3, y - 7, 5, 4);
+    }
+  }
+
+  if(e.flash > 0){
+    ctx.fillStyle = '#fff9'; ctx.fillRect(x - e.r, y - e.r, e.r * 2, e.r * 2);
+  }
+  ctx.fillStyle = '#ffdf8b'; ctx.fillRect(x - e.r, y - e.r - 9, e.r * 2, 4);
+  ctx.fillStyle = '#9c443c'; ctx.fillRect(x - e.r, y - e.r - 9, e.r * 2 * Math.max(0, e.hp / e.max), 4);
+}
+
+let musicOn = true, audioCtx = null, musicLoop = null, musicNote = 0;
+const realmScales = [
+  [196, 220, 261.63, 293.66, 329.63],
+  [130.81, 146.83, 155.56, 174.61, 196.00],
+  [146.83, 164.81, 196.00, 220.00, 246.94],
+  [110.00, 130.81, 146.83, 164.81, 220.00]
+];
+
+function startForestMusic(){
+  if(!musicOn) return;
+  if(!audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return;
+    audioCtx = new AC();
+  }
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  if(musicLoop) clearInterval(musicLoop);
+
+  const z = zoneFor(qIndex);
+  const intervalMs = z === 3 ? 350 : 550;
+
+  musicLoop = setInterval(() => {
+    if(!musicOn || state === 'start' || state === 'help' || state === 'quiz' || state === 'results' || state === 'reward') return;
+    const rz = zoneFor(qIndex);
+    const scale = realmScales[rz];
+    const f = scale[musicNote++ % scale.length];
+    const now = audioCtx.currentTime;
+
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = rz === 1 ? 'sawtooth' : rz === 3 ? 'square' : 'sine';
+    o.frequency.setValueAtTime(f, now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(rz === 3 ? 0.04 : 0.025, now + 0.08);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + (rz === 3 ? 0.4 : 1.2));
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start(now);
+    o.stop(now + 1.25);
+  }, intervalMs);
+}
+
+$('musicBtn').onclick = () => {
+  musicOn = !musicOn;
+  setText('musicBtn', musicOn ? '♫ MUSIC: ON' : '♫ MUSIC: OFF');
+  if(musicOn) startForestMusic();
+  else if(musicLoop){ clearInterval(musicLoop); musicLoop = null; }
+};
+
+function toggleMap(){
+  if(state !== 'world') return;
+  mapOpen = !mapOpen;
+  setText('hint', mapOpen ? 'MAP OPEN — press M to return to the forest.' : 'Explore the forest and find the glowing scrolls.');
+}
+$('mapBtn').onclick = toggleMap;
+
+let stateBeforeHelp = 'world';
+$('helpBtn').onclick = () => {
+  if(state === 'start' || state === 'results') return;
+  stateBeforeHelp = state;
+  state = 'help';
+  $('helpModal').classList.remove('hidden');
+};
+$('closeHelpBtn').onclick = () => {
+  $('helpModal').classList.add('hidden');
+  state = stateBeforeHelp;
+};
+
+function frame(t){
+  const dt = Math.min(0.033, (t - last) / 1000 || 0);
+  last = t;
+  if(state === 'world'){ moveWorld(dt); drawWorldView(); }
+  else if(state === 'arena'){ updateArena(dt); drawArena(); }
+  requestAnimationFrame(frame);
+}
+
+function start(){
+  qIndex = 0; score = 0; answers = []; wrong = [];
+  maxHp = 5; hp = 5; mapOpen = false; cameraX = 0; cameraY = 0; walkAnimation = 0; moving = false;
+  hasGreatsword = false; hasDarts = false; hasBombs = false;
+  dartsAmmo = 5; bombsAmmo = 3;
+  $('btnDart').classList.add('hidden');
+  $('btnBomb').classList.add('hidden');
+  player = {x: 95, y: 100, faceX: 1, faceY: 0};
+  drawWorld();
+  $('start').classList.add('hidden');
+  $('results').classList.add('hidden');
+  $('rewardModal').classList.add('hidden');
+  $('game').classList.remove('hidden');
+  $('helpModal').classList.add('hidden');
+  state = 'world';
+  setText('objective', 'Find the first glowing scroll in Greenwood Thicket.');
+  setText('mode', 'EXPLORATION');
+  setText('hint', 'Follow the golden marker through the forest.');
+  updateHud();
+  startForestMusic();
+}
+
+$('startBtn').onclick = start;
+$('again').onclick = start;
+
+window.addEventListener('keydown', e => {
+  const k = e.code;
+  if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(k)) e.preventDefault();
+  if(k === 'KeyM' && state === 'world'){
+    if(!e.repeat) toggleMap();
+    return;
+  }
+  keys[k] = true;
+  if(k === 'KeyE' && state === 'arena' && boss && Math.hypot(player.x - 480, player.y - 490) < 85){
+    keys.KeyE = true;
+  }
+});
+
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+window.addEventListener('keydown', e => {
+  if(e.code === 'Escape' && state === 'help'){
+    $('helpModal').classList.add('hidden');
+    state = stateBeforeHelp;
+  }
+});
+
+document.querySelectorAll('[data-key]').forEach(b => {
+  const k = b.dataset.key;
+  b.addEventListener('pointerdown', e => { e.preventDefault(); keys[k] = true; });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => keys[k] = false));
+});
+
+document.querySelector('[data-key="KeyE"]').addEventListener('click', () => {
+  if(state === 'arena' && boss && Math.hypot(player.x - 480, player.y - 490) < 85){
+    boss.hp = 0; boss.dead = true;
+    setText('hint', 'Ancient seal activated. The boss has been defeated.');
+  }
+});
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
